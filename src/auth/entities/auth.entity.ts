@@ -30,13 +30,16 @@ export class User {
   @Column({ nullable: true })
   lastname?: string;
 
+  @Column({ nullable: true, length: 20 })
+  phone?: string;
+
   @Column({
     nullable: true,
     length: 15,
   })
   cnic?: string; // e.g., "12345-1234567-1"
-
-  @Column({ default: 'user' })
+  //roles are admin, resident, and employee
+  @Column({ default: 'resident' })
   role: string;
 
   @Column({ default: false, nullable: true })
