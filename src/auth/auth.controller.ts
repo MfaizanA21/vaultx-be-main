@@ -1,9 +1,20 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post, Logger } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { SignUpDto } from './dto/sign-up.dto';
 
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthController.name);
+
+  constructor(private readonly authService: AuthService) {}
+
   @Get()
-  getStatus() {
-    return { status: 'Auth service is running' };
+  getHello(): string {
+    return 'Hello World!';
+  }
+  @Post('signup')
+  async signup(@Body() signupDto: SignUpDto): Promise<any> {
+    this.logger.log(`Received signup request: ${JSON.stringify(signupDto)}`);
+    return await this.authService.createUser(signupDto);
   }
 }
