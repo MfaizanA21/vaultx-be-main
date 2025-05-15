@@ -36,6 +36,9 @@ export class User {
   })
   cnic?: string; // e.g., "12345-1234567-1"
 
+  @Column({ default: 'user' })
+  role: string;
+
   @Column({ default: false, nullable: true })
   isVerified?: boolean;
 
