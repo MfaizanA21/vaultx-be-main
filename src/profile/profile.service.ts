@@ -8,6 +8,8 @@ import { User } from 'src/auth/entities/auth.entity';
 import { Residence } from 'src/residence/entity/residence.entity';
 import { Repository } from 'typeorm';
 import { CreateProfileDTO } from './dto/create-profile.dto';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class ProfileService {
@@ -99,6 +101,39 @@ export class ProfileService {
     } catch (error) {
       console.error('Error updating user profile:', error);
       throw new InternalServerErrorException('Failed to update user profile.');
+    }
+  }
+
+  async updateUserPassword(
+    dto: UpdatePasswordDto,
+    userId: string,
+  ): Promise<void> {
+    const { currentPassword, newPassword } = dto;
+
+    // Find user
+    const user = await this.userRepository.findOne({
+      where: { userid: userId },
+    });
+
+    if (!user) {
+      throw new ConflictException('User not found.');
+    }
+
+    // Compare current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      throw new ConflictException('Old password is incorrect.');
+    }
+
+    // Hash and save new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+
+    try {
+      await this.userRepository.save(user);
+    } catch (error) {
+      console.error('Error updating user password:', error);
+      throw new InternalServerErrorException('Failed to update user password.');
     }
   }
 }

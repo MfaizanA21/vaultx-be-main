@@ -5,6 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/common/roles.decorator';
 import { RolesGuard } from 'src/common/roles.guard';
 import { Logger } from '@nestjs/common';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles('resident')
@@ -25,5 +26,17 @@ export class ProfileController {
   ) {
     const userId = req.user.userid;
     return await this.profileService.createUserProfile(createUserDto, userId);
+  }
+
+  @Post('password/update')
+  async updatePassword(
+    @Body() updatePasswordDto: UpdatePasswordDto,
+    @Req() req: { user: { userid: string } },
+  ) {
+    const userId = req.user.userid;
+    return await this.profileService.updateUserPassword(
+      updatePasswordDto,
+      userId,
+    );
   }
 }
