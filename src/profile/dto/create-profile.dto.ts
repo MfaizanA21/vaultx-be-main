@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsEnum,
@@ -20,38 +20,39 @@ export enum ResidenceType {
 }
 
 export class CreateProfileDTO {
+  @ApiProperty({ example: 'Ali' })
   @IsString()
-  @IsNotEmpty({ message: 'First name is required.' })
+  @IsNotEmpty()
   firstname: string;
 
+  @ApiProperty({ example: 'Khan' })
   @IsString()
-  @IsNotEmpty({ message: 'Last name is required.' })
+  @IsNotEmpty()
   lastname: string;
 
-  @IsString()
-  @IsPhoneNumber('PK', {
-    message: 'Phone number must be a valid Pakistani number.',
-  })
+  @ApiProperty({ example: '+923331112222' })
+  @IsPhoneNumber('PK')
   phonenumber: string;
 
+  @ApiProperty({ example: '4210112345671' })
   @IsString()
-  @Length(13, 13, { message: 'CNIC must be exactly 13 digits.' })
-  @Matches(/^\d{13}$/, { message: 'CNIC must contain only digits.' })
+  @Length(13, 13)
+  @Matches(/^\d{13}$/)
   cnic: string;
 
-  @IsEnum(ResidenceEnum, {
-    message: 'Residence must be apartment, flat, or house.',
-  })
+  @ApiProperty({ enum: ResidenceEnum, example: ResidenceEnum.APARTMENT })
+  @IsEnum(ResidenceEnum)
   residence: ResidenceEnum;
 
-  @IsEnum(ResidenceType, { message: 'Residence type must be rented or owned.' })
+  @ApiProperty({ enum: ResidenceType, example: ResidenceType.RENTED })
+  @IsEnum(ResidenceType)
   residenceType: ResidenceType;
 
+  @ApiProperty({ example: 'B' })
   @IsString()
-  @IsNotEmpty({ message: 'Block is required.' })
   block: string;
 
+  @ApiProperty({ example: 'Flat 12, Gulshan View Apartments, Karachi' })
   @IsString()
-  @IsNotEmpty({ message: 'Address is required.' })
   address: string;
 }
