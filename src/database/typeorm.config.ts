@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from 'src/auth/entities/auth.entity';
+import { Residence } from 'src/residence/entity/residence.entity';
 
 export const typeOrmConfig = (): TypeOrmModuleOptions => ({
   type: 'mssql',
@@ -8,8 +9,8 @@ export const typeOrmConfig = (): TypeOrmModuleOptions => ({
   username: 'vaultx-serv-ad',
   password: 'Vault_x_2025',
   database: 'vaultx_db',
-  entities: [User],
-  synchronize: true,
+  entities: [User, Residence],
+  synchronize: false,
   options: {
     encrypt: true,
   },

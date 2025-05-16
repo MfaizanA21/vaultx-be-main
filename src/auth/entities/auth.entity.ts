@@ -1,3 +1,4 @@
+import { Residence } from 'src/residence/entity/residence.entity';
 import {
   Entity,
   Column,
@@ -5,11 +6,16 @@ import {
   BeforeInsert,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
 @Entity('users')
 export class User {
+  @OneToMany(() => Residence, (residence) => residence.user, {
+    cascade: true, // Optional: lets you auto-save residences via user
+  })
+  residences: Residence[];
   @PrimaryColumn()
   userid: string;
 
