@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../auth/entities/auth.entity';
+import { Society } from 'src/society/entity/society.entity';
 
 @Entity('residences')
 export class Residence {
@@ -24,18 +25,6 @@ export class Residence {
   @Column({ nullable: true })
   addressLine2?: string;
 
-  @Column({ nullable: true })
-  city?: string;
-
-  @Column({ nullable: true })
-  state?: string;
-
-  @Column({ nullable: true })
-  country?: string;
-
-  @Column({ nullable: true })
-  postalCode?: string;
-
   @Column({ type: 'varchar', length: 20, default: 'owned' })
   residenceType: string; // 'owned' or 'rented'
 
@@ -48,17 +37,15 @@ export class Residence {
   @Column({ default: false })
   isApprovedBySociety: boolean;
 
+  @ManyToOne(() => Society, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'societyid' })
+  society?: Society;
+
   @Column({ nullable: true })
   approvedBy?: string;
 
   @Column({ nullable: true, type: 'datetime' })
   approvedAt?: Date;
-
-  @Column({ nullable: true })
-  societyName?: string;
-
-  @Column({ nullable: true })
-  buildingName?: string;
 
   @Column({ nullable: true })
   flatNumber?: string;

@@ -9,6 +9,7 @@ import { ProfileModule } from './profile/profile.module';
 import { VehicleModule } from './vehicle/vehicle.module';
 import { GuestModule } from './guest/guest.module';
 import { AdminModule } from './admin/admin.module';
+import { SocietyModule } from './society/society.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AdminModule } from './admin/admin.module';
     VehicleModule,
     GuestModule,
     AdminModule,
+    SocietyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
