@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './database/typeorm.config';
 import { ResidenceModule } from './residence/residence.module';
 import { ProfileModule } from './profile/profile.module';
+import { VehicleModule } from './vehicle/vehicle.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ProfileModule } from './profile/profile.module';
     AuthModule,
     ResidenceModule,
     ProfileModule,
+    VehicleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
