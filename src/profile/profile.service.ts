@@ -22,7 +22,18 @@ export class ProfileService {
     private readonly residenceRepository: Repository<Residence>,
   ) {}
 
-  async getUserProfile(userId: string): Promise<Partial<User> | null> {
+  async getUserProfile(userId: string): Promise<{
+    firstname: string;
+    lastname: string;
+    phone: string;
+    cnic: string;
+    residence?: {
+      addressLine1?: string;
+      block?: string;
+      residence?: string;
+      residenceType?: string;
+    };
+  } | null> {
     const user = await this.userRepository.findOne({
       where: { userid: userId },
       relations: ['residences'],
@@ -32,11 +43,21 @@ export class ProfileService {
 
     const { firstname, lastname, phone, cnic } = user;
 
+    const primaryResidence = user.residences.find((res) => res.isPrimary);
+
     return {
-      firstname,
-      lastname,
-      phone,
-      cnic,
+      firstname: firstname ?? '',
+      lastname: lastname ?? '',
+      phone: phone ?? '',
+      cnic: cnic ?? '',
+      residence: primaryResidence
+        ? {
+            addressLine1: primaryResidence.addressLine1,
+            block: primaryResidence.block,
+            residence: primaryResidence.residence,
+            residenceType: primaryResidence.residenceType,
+          }
+        : undefined,
     };
   }
 
