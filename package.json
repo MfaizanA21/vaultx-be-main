@@ -1,8 +1,8 @@
 {
   "name": "vaultx-be",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "vaultx backend",
+  "author": "https-404",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
