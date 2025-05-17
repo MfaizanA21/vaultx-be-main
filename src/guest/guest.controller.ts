@@ -25,4 +25,10 @@ export class GuestController {
     const userId = req.user.userid;
     return await this.guestService.addGuest(dto, userId);
   }
+
+  @Post('verify')
+  async verifyGuest(@Body() dto: { guestId: string }) {
+    const { guestId } = dto;
+    return await this.guestService.verifyGuest(guestId);
+  }
 }

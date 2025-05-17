@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Injectable,
   InternalServerErrorException,
@@ -9,6 +12,7 @@ import { Guest } from './entity/guest.entity';
 import { Residence } from 'src/residence/entity/residence.entity';
 import { AddGuestDto } from './dto/add-guest.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as QRCode from 'qrcode';
 
 @Injectable()
 export class GuestService {
@@ -23,7 +27,10 @@ export class GuestService {
     private readonly residenceRepository: Repository<Residence>,
   ) {}
 
-  async addGuest(dto: AddGuestDto, userId: string): Promise<void> {
+  async addGuest(
+    dto: AddGuestDto,
+    userId: string,
+  ): Promise<{ qrCodeImage: string }> {
     const {
       guestName,
       guestPhoneNumber,
@@ -70,10 +77,22 @@ export class GuestService {
     });
 
     try {
-      await this.guestRepository.save(guest);
+      const savedGuest = await this.guestRepository.save(guest);
+
+      // 🔐 Generate QR code with guestId + eta
+      const qrPayload = JSON.stringify({
+        guestId: savedGuest.guestId,
+        eta: savedGuest.eta,
+      });
+
+      const qrCodeImage = await QRCode.toDataURL(qrPayload);
+
+      return { qrCodeImage };
     } catch (error) {
-      console.error('Error saving guest:', error);
-      throw new InternalServerErrorException('Failed to register guest.');
+      console.error('Error saving guest or generating QR:', error);
+      throw new InternalServerErrorException(
+        'Failed to register guest or generate QR code.',
+      );
     }
   }
 
@@ -111,5 +130,32 @@ export class GuestService {
       vehicleColor: g.guestVehicle?.vehicleColor,
       isGuest: g.guestVehicle?.isGuest,
     }));
+  }
+
+  async verifyGuest(
+    guestId: string,
+  ): Promise<{ valid: boolean; reason?: string }> {
+    const guest = await this.guestRepository.findOne({
+      where: { guestId },
+    });
+
+    if (!guest) {
+      return { valid: false, reason: 'Guest not found.' };
+    }
+
+    if (guest.visitCompleted) {
+      return { valid: false, reason: 'Visit already completed.' };
+    }
+
+    const now = new Date();
+    const eta = new Date(guest.eta);
+
+    const timeDiff = Math.abs(now.getTime() - eta.getTime());
+    const oneHour = 1000 * 60 * 60;
+    if (timeDiff > oneHour) {
+      return { valid: false, reason: 'Guest not within allowed ETA window.' };
+    }
+
+    return { valid: true };
   }
 }
