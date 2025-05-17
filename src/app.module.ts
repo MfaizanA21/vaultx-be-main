@@ -8,6 +8,7 @@ import { ResidenceModule } from './residence/residence.module';
 import { ProfileModule } from './profile/profile.module';
 import { VehicleModule } from './vehicle/vehicle.module';
 import { GuestModule } from './guest/guest.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { GuestModule } from './guest/guest.module';
     ProfileModule,
     VehicleModule,
     GuestModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
