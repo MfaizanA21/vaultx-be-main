@@ -6,14 +6,16 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/entities/auth.entity';
 import { Residence } from 'src/residence/entity/residence.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { CreateProfileDTO } from './dto/create-profile.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import * as bcrypt from 'bcrypt';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class ProfileService {
   constructor(
+    private readonly dataSource: DataSource,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Residence)
@@ -135,5 +137,71 @@ export class ProfileService {
       console.error('Error updating user password:', error);
       throw new InternalServerErrorException('Failed to update user password.');
     }
+  }
+
+  async updateProfile(dto: UpdateProfileDto, userId: string): Promise<void> {
+    await this.dataSource.transaction(async (manager) => {
+      const userRepo = manager.getRepository(User);
+      const residenceRepo = manager.getRepository(Residence);
+
+      const user = await userRepo.findOne({ where: { userid: userId } });
+
+      if (!user) {
+        throw new ConflictException('User not found.');
+      }
+
+      const {
+        firstname,
+        lastname,
+        phonenumber,
+        cnic,
+        residence,
+        residenceType,
+        block,
+        address,
+      } = dto;
+
+      // Optional conflict check
+      if (cnic || phonenumber) {
+        const whereConditions = [
+          cnic ? { cnic, userid: Not(userId) } : undefined,
+          phonenumber ? { phone: phonenumber, userid: Not(userId) } : undefined,
+        ].filter(Boolean) as any[];
+
+        const existingUser = await userRepo.findOne({ where: whereConditions });
+
+        if (existingUser) {
+          throw new ConflictException(
+            'Another user with this CNIC or phone number already exists.',
+          );
+        }
+      }
+
+      // Apply user updates
+      if (firstname !== undefined) user.firstname = firstname;
+      if (lastname !== undefined) user.lastname = lastname;
+      if (phonenumber !== undefined) user.phone = phonenumber;
+      if (cnic !== undefined) user.cnic = cnic;
+
+      await userRepo.save(user);
+
+      // Update residence
+      const residenceEntity = await residenceRepo.findOne({
+        where: { user: { userid: userId }, isPrimary: true },
+        relations: ['user'],
+      });
+
+      if (!residenceEntity) {
+        throw new ConflictException('Primary residence not found for user.');
+      }
+
+      if (residence !== undefined) residenceEntity.residence = residence;
+      if (residenceType !== undefined)
+        residenceEntity.residenceType = residenceType;
+      if (block !== undefined) residenceEntity.block = block;
+      if (address !== undefined) residenceEntity.addressLine1 = address;
+
+      await residenceRepo.save(residenceEntity);
+    });
   }
 }
