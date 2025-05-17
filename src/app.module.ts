@@ -7,6 +7,7 @@ import { typeOrmConfig } from './database/typeorm.config';
 import { ResidenceModule } from './residence/residence.module';
 import { ProfileModule } from './profile/profile.module';
 import { VehicleModule } from './vehicle/vehicle.module';
+import { GuestModule } from './guest/guest.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
     ResidenceModule,
     ProfileModule,
     VehicleModule,
+    GuestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

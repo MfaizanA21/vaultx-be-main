@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { User } from './src/auth/entities/auth.entity';
 import { Residence } from 'src/residence/entity/residence.entity';
 import { Vehicle } from 'src/vehicle/entity/vehicle.entity';
+import { Guest } from 'src/guest/entity/guest.entity';
 
 export const AppDataSource = new DataSource({
   type: 'mssql',
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   database: 'vaultx_db',
   synchronize: false,
   logging: true,
-  entities: [User, Residence, Vehicle],
+  entities: [User, Residence, Vehicle, Guest],
   migrations: ['src/migrations/*.ts'],
   options: {
     encrypt: true,
