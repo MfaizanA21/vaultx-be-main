@@ -10,6 +10,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
 import { GuestModule } from './guest/guest.module';
 import { AdminModule } from './admin/admin.module';
 import { SocietyModule } from './society/society.module';
+import { EmployeeModule } from './employee/employee.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SocietyModule } from './society/society.module';
     GuestModule,
     AdminModule,
     SocietyModule,
+    EmployeeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

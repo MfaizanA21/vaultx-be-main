@@ -79,14 +79,14 @@ export class VehicleService {
     });
 
     return vehicles.map((v) => ({
-vehicleName: v.vehicleName,
-    vehicleModel: v.vehicleModel,  // Add this
-    vehicleType: v.vehicleType,
-    vehicleLicensePlateNumber: v.vehicleLicensePlateNumber,  // Add this
-    vehicleRFIDTagId: v.vehicleRFIDTagId,
-    vehicleColor: v.vehicleColor,
-    isGuest: v.isGuest,
-    vehicleId: v.vehicleId,
+      vehicleName: v.vehicleName,
+      vehicleModel: v.vehicleModel, // Add this
+      vehicleType: v.vehicleType,
+      vehicleLicensePlateNumber: v.vehicleLicensePlateNumber, // Add this
+      vehicleRFIDTagId: v.vehicleRFIDTagId,
+      vehicleColor: v.vehicleColor,
+      isGuest: v.isGuest,
+      vehicleId: v.vehicleId,
     }));
   }
 }

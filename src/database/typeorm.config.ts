@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from 'src/auth/entities/auth.entity';
+import { Employee } from 'src/employee/entity/employee.entity';
 import { Guest } from 'src/guest/entity/guest.entity';
 import { Residence } from 'src/residence/entity/residence.entity';
 import { Society } from 'src/society/entity/society.entity';
@@ -12,7 +13,7 @@ export const typeOrmConfig = (): TypeOrmModuleOptions => ({
   username: 'vaultx-serv-ad',
   password: 'Vault_x_2025',
   database: 'vaultx_db',
-  entities: [User, Residence, Vehicle, Guest, Society],
+  entities: [User, Residence, Vehicle, Guest, Society, Employee],
   synchronize: false,
   options: {
     encrypt: true,
