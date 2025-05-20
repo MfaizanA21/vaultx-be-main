@@ -6,8 +6,8 @@ import { Roles } from 'src/common/roles.decorator';
 import { CreateSocietyDto } from './dto/create-society.dto';
 import { GetSocietyDto } from './dto/get-societies.dto';
 
-// @UseGuards(AuthGuard('jwt'), RolesGuard)
-// @Roles('admin')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('admin')
 @Controller('society')
 export class SocietyController {
   constructor(private readonly societyService: SocietyService) {}
@@ -21,4 +21,10 @@ export class SocietyController {
   async getAllSocieties(): Promise<GetSocietyDto[]> {
     return this.societyService.getAllSocieties();
   }
+
+  @Get('latest')
+async getLatestSociety(): Promise<GetSocietyDto | null> {
+  return this.societyService.getLatestSociety();
+}
+
 }

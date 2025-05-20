@@ -87,4 +87,46 @@ export class AdminService {
       );
     }
   }
+
+async getApprovedUsers(): Promise<any[]> {
+  try {
+    const residences = await this.residenceRepository.find({
+      where: { isApprovedBySociety: true },
+      relations: ['user'],
+    });
+
+    if (!residences || residences.length === 0) {
+      throw new NotFoundException('No approved users found.');
+    }
+
+    return residences.map((res) => ({
+      residentId: res.id,
+      firstname: res.user?.firstname ?? '',
+      lastname: res.user?.lastname ?? '',
+      cnic: res.user?.cnic ?? '',
+      email: res.user?.email ?? '',
+      phone: res.user?.phone ?? '',
+      residence: {
+        addressLine1: res.addressLine1 ?? '',
+        block: res.block ?? '',
+        residence: res.residence,
+        residenceType: res.residenceType,
+      },
+    }));
+  } catch (error) {
+    console.error(
+      'Error fetching approved users:',
+      (error as Error).message,
+    );
+    if (error instanceof NotFoundException) {
+      throw error;
+    }
+    throw new InternalServerErrorException(
+      'Failed to fetch approved users.',
+    );
+  }
+}
+
+
+
 }

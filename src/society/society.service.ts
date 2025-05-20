@@ -11,25 +11,26 @@ export class SocietyService {
     @InjectRepository(Society)
     private readonly societyRepository: Repository<Society>,
   ) {}
+private latestSocietyId: string | null = null;
+ async addSociety(dto: CreateSocietyDto): Promise<void> {
+  const { name, address, city, state, postalCode } = dto;
 
-  async addSociety(dto: CreateSocietyDto): Promise<void> {
-    const { name, address, city, state, postalCode } = dto;
+  const newSociety = this.societyRepository.create({
+    name,
+    address,
+    city,
+    state,
+    postalCode,
+  });
 
-    const newSociety = this.societyRepository.create({
-      name,
-      address,
-      city,
-      state,
-      postalCode,
-    });
-
-    try {
-      await this.societyRepository.save(newSociety);
-    } catch (error) {
-      console.error('Error saving society:', (error as Error).message);
-      throw new InternalServerErrorException('Failed to create society.');
-    }
+  try {
+    await this.societyRepository.save(newSociety);
+    this.latestSocietyId = newSociety.societyId;  // Store the latest ID
+  } catch (error) {
+    console.error('Error saving society:', (error as Error).message);
+    throw new InternalServerErrorException('Failed to create society.');
   }
+}
 
   async getAllSocieties(): Promise<GetSocietyDto[]> {
     try {
@@ -39,4 +40,21 @@ export class SocietyService {
       throw new InternalServerErrorException('Failed to fetch societies.');
     }
   }
+
+
+  async getLatestSociety(): Promise<GetSocietyDto | null> {
+  if (!this.latestSocietyId) {
+    return null;
+  }
+  
+  try {
+    return await this.societyRepository.findOne({
+      where: { societyId: this.latestSocietyId }
+    });
+  } catch (error) {
+    console.error('Error fetching latest society:', (error as Error).message);
+    throw new InternalServerErrorException('Failed to fetch latest society.');
+  }
+}
+
 }
